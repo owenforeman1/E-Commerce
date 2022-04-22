@@ -81,6 +81,7 @@ router.put("/:id", async (req, res) => {
       return ProductTag.findAll({ where: { product_id: req.params.id } });
     })
     .then((productTags) => {
+      console.log(productTags);
       // get list of current tag_ids
       const productTagIds = productTags.map(({ tag_id }) => tag_id);
       // create filtered list of new tag_ids
@@ -92,11 +93,12 @@ router.put("/:id", async (req, res) => {
             tag_id,
           };
         });
+        console.log(productTags);
       // figure out which ones to remove
       const productTagsToRemove = productTags
         .filter(({ tag_id }) => !req.body.tagIds.includes(tag_id))
         .map(({ id }) => id);
-
+        console.log(productTagsToRemove);
       // run both actions
       return Promise.all([
         ProductTag.destroy({ where: { id: productTagsToRemove } }),
@@ -116,11 +118,12 @@ router.delete("/:id", async (req, res) => {
     const productData = await Product.destroy({
       where: { id: req.params.id },
     });
-    if (!categoryData) {
+    if (!productData) {
       res.status(404).json({ message: "No product was found with that id" });
     }
     res.status(200).json(productData);
   } catch (err) {
+    console.log(err);
     res.status(500).json(err);
   }
 });
